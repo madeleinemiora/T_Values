@@ -144,6 +144,8 @@ int main()
 	vector<T_subU> T_subU_vector;
 	T_subU_vector.resize(v1 + 1);
 
+	vector<T_subU> Limited_T_Values;
+
 	//Populate 2D array.
 	for (int Tu = 0; Tu <= v1; Tu++)
 	{
@@ -219,9 +221,25 @@ int main()
 			count++;
 			if (valueAlreadyExist(possible_T_Values, lower_T))
 			{
+				Limited_T_Values[Tu].T_subU_Values.push_back(lower_T);
 				if (count > 1) cout << ", ";
 				cout << lower_T;			
-			} 
+			}
+
+			//Check Tu = u, u-2, u-4 ...
+			if ((Tu - 2) >= 0)
+			{
+				int i = 2;
+				while ((Tu - i) >= 0)
+				{
+					//removing duplicates found in previous T vector.
+					remove_copy_if(T_subU_vector[Tu - i].T_subU_Values.begin(), T_subU_vector[Tu - i].T_subU_Values.end(),
+								   back_inserter(T_subU_vector[Tu].T_subU_Values), Contained<int>(T_subU_vector[Tu].T_subU_Values.begin(),
+								   T_subU_vector[Tu].T_subU_Values.end()));
+					i = i + 2;
+				}
+			}
+
 		}
 		cout << endl;
 	}
