@@ -2,8 +2,42 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <set>
 
-using namespace std;
+using namespace std; 
+//Will most likely get away from using this namespace.  For now, using this namespace
+//increases readability for your learning purposes.  
+
+class T_subU {
+
+public:
+
+	vector<int> T_subU_Values;
+
+	void printValues()
+	{
+		for (auto i = T_subU_Values.begin(); i != T_subU_Values.end(); i++)
+		{
+			cout << *i << " ";
+		}
+		cout << endl;
+	}
+
+};
+
+//Purpose of this template is to create a set of unique values between two vectors.
+//This 'Contained' template is adapted from:
+//https://stackoverflow.com/questions/5529067/c-appending-one-vector-to-another-with-removal-of-duplicates
+
+template <typename T> struct Contained
+{
+	const set<T> _set;
+	template <typename It> Contained(const It& begin, const It& end) : _set(begin, end) {}
+	bool operator()(const T& i) const
+	{
+		return _set.end() != _set.find(i);
+	}
+};
 
 int generate_TsubUValue(int T_subU, int u_value)
 {
@@ -74,23 +108,6 @@ vector<int> generate_q_values(int v1, int v2)
 
 	return q_values;
 }
-
-class T_subU {
-
-public:
-
-	vector<int> T_subU_Values;
-
-	void printValues()
-	{
-		for (auto i = T_subU_Values.begin(); i != T_subU_Values.end(); i++)
-		{
-			cout << *i << " ";
-		}
-		cout << endl;
-	}
-
-};
  
 int main()
 {
@@ -110,7 +127,6 @@ int main()
 	cout << "v1 value is: " << v1 << endl;
 	cout << "v2 value is: " << v2 << endl;
 
-	//TODO: use vector and pair libraries.
 	//T_subU will always be the size of U, the given value of v1.
 
 	//Create 2D array (array of arrays hence the double pointer).
@@ -141,34 +157,43 @@ int main()
 			T_subU_vector[Tu].T_subU_Values.push_back(generate_TsubUValue(Tu, u));
 
 			//If no possible values and no possible collisions, push value to vector.
-			if (possible_T_Values.empty() && T_array[Tu][u] <= v1 && T_array[Tu][u] >= 0)
+			if (possible_T_Values.empty() 
+				&& T_subU_vector[Tu].T_subU_Values[u] <= v1
+				&& T_subU_vector[Tu].T_subU_Values[u] >= 0)
 			{
-				possible_T_Values.push_back(T_array[Tu][u]);
+				possible_T_Values.push_back( T_subU_vector[Tu].T_subU_Values[u] );
 			}
 			//Check for collisions of T values.  If does not already exist in vector, push value to vector.
-			else if ( !valueAlreadyExist(possible_T_Values, T_array[Tu][u]) && T_array[Tu][u] <= v1 && T_array[Tu][u] >= 0)
+			else if ( !valueAlreadyExist(possible_T_Values, T_subU_vector[Tu].T_subU_Values[u] ) && 
+				      T_subU_vector[Tu].T_subU_Values[u] <= v1 && 
+				      T_subU_vector[Tu].T_subU_Values[u] >= 0)
 			{
-				possible_T_Values.push_back( T_array[Tu][u] );
-			}			
+				possible_T_Values.push_back( T_subU_vector[Tu].T_subU_Values[u] );
+			}
 		}
 		cout << endl;
+
 		//Check Tu = u, u-2, u-4 ...
+		
 		/*
 		if ((Tu - 2) >= 0)
 		{
 			int i = 2;
 			while( (Tu - i) >= 0)
 			{
-				//cout << "T" << (Tu - 2) << ": ";
-				//T_subU_vector[(Tu - 2)].printValues();
-				if ( find(  ) )
+				//removing duplicates found in previous T vector.
+				remove_copy_if( T_subU_vector[Tu - i].T_subU_Values.begin(), T_subU_vector[Tu - i].T_subU_Values.end(),
+				                back_inserter(T_subU_vector[Tu].T_subU_Values), Contained<int>(T_subU_vector[Tu].T_subU_Values.begin(),
+								T_subU_vector[Tu].T_subU_Values.end() ) );
 				i = i + 2;
 			}
-
+			//cout << "Printing T" << Tu << ": ";
+			//T_subU_vector[Tu].printValues();
 		}*/
 	}
 
 	print_possible_values(possible_T_Values);
+	cout << endl;
 
 	for (int Tu = 0; Tu <= v1; Tu++)
 	{		
@@ -195,7 +220,7 @@ int main()
 			if (valueAlreadyExist(possible_T_Values, lower_T))
 			{
 				if (count > 1) cout << ", ";
-				cout << lower_T;				
+				cout << lower_T;			
 			} 
 		}
 		cout << endl;
@@ -207,6 +232,14 @@ int main()
 
 	//if v1 is greater than v2, generate q values normally, else, produce q value of 0.
 	vector<int> q_values = (v1 > v2) ? generate_q_values(v1, v2) : generate_q_values(0, 0) ;
+
+	cout << endl;
+
+	for (int i = 0; i <= v1; i++)
+	{
+		cout << "T" << i << ": ";
+		T_subU_vector[i].printValues();
+	}
 
 	//Clean up memory
 
