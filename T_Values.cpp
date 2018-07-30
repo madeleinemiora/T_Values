@@ -59,16 +59,6 @@ bool valueAlreadyExist(vector<int> possibleValues, int T_value)
 	return (find(possibleValues.begin(), possibleValues.end(), T_value) != possibleValues.end() );
 }
 
-void print_possible_values(vector<int> possibleValues)
-{
-	cout << "Possible values for T: ";
-	for (auto i = possibleValues.begin(); i != possibleValues.end(); i++)
-	{
-		cout << *i << " ";
-	}
-	cout << endl;
-}
-
 vector<int> generate_p_values(int v2)
 {
 	vector<int> p_values;
@@ -112,8 +102,6 @@ vector<int> generate_q_values(int v1, int v2)
 int main()
 {
 	//Initiate beginning of program.
-	cout << "Hello, Maddie" << endl;
-
 	int v1, v2;
 
 	//Get values of v1.
